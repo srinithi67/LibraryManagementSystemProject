@@ -1,7 +1,7 @@
 package com.capgemini.librarymanagementsystem.dao;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 import com.capgemini.librarymanagementsystem.db.BookDatabase;
 import com.capgemini.librarymanagementsystem.dto.Book;
@@ -35,8 +35,8 @@ public class UserDAOImple implements UserDAO {
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByTitle(String bname) {
-		ArrayList<Book> searchList = new ArrayList<Book>();
+	public List<Book> searchBookByTitle(String bname) {
+		List<Book> searchList = new ArrayList<Book>();
 		for (int i = 0; i <= BookDatabase.book.size() - 1; i++) {
 			Book retrievedBook = BookDatabase.book.get(i);
 			String retrievedBname = retrievedBook.getBookName();
@@ -135,8 +135,8 @@ public class UserDAOImple implements UserDAO {
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByCategory(String category) {
-		ArrayList<Book> searchList = new ArrayList<Book>();
+	public List<Book> searchBookByCategory(String category) {
+		List<Book> searchList = new ArrayList<Book>();
 		for (int i = 0; i <= BookDatabase.book.size() - 1; i++) {
 			Book retrievedBook = BookDatabase.book.get(i);
 			String retrievedCategory = retrievedBook.getCategory();

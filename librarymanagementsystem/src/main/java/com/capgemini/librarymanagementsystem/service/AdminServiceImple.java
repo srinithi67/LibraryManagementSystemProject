@@ -1,6 +1,5 @@
 package com.capgemini.librarymanagementsystem.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.capgemini.librarymanagementsystem.dao.AdminDAO;
@@ -47,17 +46,17 @@ public class AdminServiceImple implements AdminService {
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByTitle(String bname) {
+	public List<Book> searchBookByTitle(String bname) {
 		return dao.searchBookByTitle(bname);
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByAuthor(String bauthor) {
+	public List<Book> searchBookByAuthor(String bauthor) {
 		return dao.searchBookByAuthor(bauthor);
 	}
 
 	@Override
-	public ArrayList<Book> getBooks() {
+	public List<Book> getBooks() {
 		return dao.getBooks();
 	}
 
@@ -67,7 +66,7 @@ public class AdminServiceImple implements AdminService {
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByCategory(String category) {
+	public List<Book> searchBookByCategory(String category) {
 		return dao.searchBookByCategory(category);
 	}
 

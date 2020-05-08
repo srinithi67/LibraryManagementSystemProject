@@ -21,13 +21,13 @@ public interface AdminDAO {
 
 	boolean updateBook(Book book);
 
-	ArrayList<Book> searchBookByTitle(String bname);
+	List<Book> searchBookByTitle(String bname);
 
-	ArrayList<Book> searchBookByAuthor(String bauthor);
+	List<Book> searchBookByAuthor(String bauthor);
 
-	ArrayList<Book> searchBookByCategory(String category);
+	List<Book> searchBookByCategory(String category);
 
-	ArrayList<Book> getBooks();
+	List<Book> getBooks();
 
 	boolean isBookReceived(User user, Book book);
 

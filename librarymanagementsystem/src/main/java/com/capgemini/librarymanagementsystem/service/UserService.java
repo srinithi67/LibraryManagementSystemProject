@@ -1,6 +1,6 @@
 package com.capgemini.librarymanagementsystem.service;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.capgemini.librarymanagementsystem.dto.Book;
 import com.capgemini.librarymanagementsystem.dto.Request;
@@ -16,12 +16,12 @@ public interface UserService {
 	public Request bookReturn(User user, Book book);
 
 	// Book borrow(int bookId);
-	ArrayList<Book> searchBookByTitle(String bname);
+	List<Book> searchBookByTitle(String bname);
 
-	ArrayList<Book> searchBookByAuthor(String bAuthor);
+	List<Book> searchBookByAuthor(String bAuthor);
 
-	ArrayList<Book> searchBookByCategory(String category);
+	List<Book> searchBookByCategory(String category);
 
-	ArrayList<Book> getBooksInfo();
+	List<Book> getBooksInfo();
 
 }
