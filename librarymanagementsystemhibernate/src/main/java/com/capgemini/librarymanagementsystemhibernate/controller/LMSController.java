@@ -11,6 +11,8 @@ import com.capgemini.librarymanagementsystemhibernate.dto.RequestDetails;
 import com.capgemini.librarymanagementsystemhibernate.dto.User;
 import com.capgemini.librarymanagementsystemhibernate.exception.LMSException;
 import com.capgemini.librarymanagementsystemhibernate.factory.LMSFactory;
+import com.capgemini.librarymanagementsystemhibernate.service.AdminService;
+import com.capgemini.librarymanagementsystemhibernate.service.AdminUserService;
 import com.capgemini.librarymanagementsystemhibernate.service.UserService;
 import com.capgemini.librarymanagementsystemhibernate.validations.LMSValidation;
 
@@ -38,7 +40,9 @@ public class LMSController {
 				System.out.println("Press 3 to EXIT");
 				do {
 					try {
-						UserService service1 = LMSFactory.getUserService();
+						AdminService  service1 = LMSFactory.getAdminService();
+						AdminUserService service2 = LMSFactory.getAdminUserService();
+						UserService service3 = LMSFactory.getUserService();
 						int choice = scanner.nextInt();
 						switch (choice) {
 						case 1:
@@ -134,7 +138,7 @@ public class LMSController {
 							ai.setMobile(regMobile);
 							ai.setRole(regRole);
 							try {
-								boolean check = service1.register(ai);
+								boolean check = service2.register(ai);
 								if (check) {
 									System.out.println("Registered");
 								} else {
@@ -150,7 +154,7 @@ public class LMSController {
 							System.out.println("enter password");
 							String password = scanner.next();
 							try {
-								User loginInfo = service1.authUser(email, password);
+								User loginInfo = service2.authUser(email, password);
 								if (loginInfo.getEmail().equals(email) && loginInfo.getPassword().equals(password)) {
 									System.out.println("Logged In");
 								}
@@ -256,7 +260,7 @@ public class LMSController {
 												System.out.println("Search the book by the Author Name:");
 												String author = scanner.next();
 												try {
-													List<Book> bookauthor = service1.searchBookByAuthor(author);
+													List<Book> bookauthor = service2.searchBookByAuthor(author);
 													for (Book bookBean : bookauthor) {
 
 														if (bookBean != null) {
@@ -288,7 +292,7 @@ public class LMSController {
 												System.out.println("  Search the book by the Book_Title :");
 												String btitle = scanner.next();
 												try {
-													List<Book> booktitle = service1.searchBookByTitle(btitle);
+													List<Book> booktitle = service2.searchBookByTitle(btitle);
 													for (Book bookBean : booktitle) {
 														if (bookBean != null) {
 															System.out.println(
@@ -318,7 +322,7 @@ public class LMSController {
 
 											case 6:
 												try {
-													List<Book> info = service1.getBooksInfo();
+													List<Book> info = service2.getBooksInfo();
 													for (Book bookBean : info) {
 
 														if (bookBean != null) {
@@ -349,7 +353,7 @@ public class LMSController {
 												System.out.println("  Search the book by the Book_ID :");
 												int book_Id = scanner.nextInt();
 												try {
-													List<Book> bId = service1.searchBookById(book_Id);
+													List<Book> bId = service2.searchBookById(book_Id);
 													for (Book bookBean : bId) {
 														if (bookBean != null) {
 															System.out.println(
@@ -403,7 +407,7 @@ public class LMSController {
 												System.out.println("Enter the User Id");
 												int user_Id = scanner.nextInt();
 												try {
-													List<Integer> uid = service1.bookHistoryDetails(user_Id);
+													List<Integer> uid = service3.bookHistoryDetails(user_Id);
 													for (Integer issueDetails : uid) {
 														if (issueDetails != null) {
 															System.out.println(
@@ -505,7 +509,7 @@ public class LMSController {
 												String new_Password = scanner.next();
 												String user_Role = loginInfo.getRole();
 												try {
-													boolean updated = service1.updatePassword(email_Id, old_Password,
+													boolean updated = service2.updatePassword(email_Id, old_Password,
 															new_Password, user_Role);
 													if (updated) {
 														System.out.println(
@@ -558,7 +562,7 @@ public class LMSController {
 												int reqUserId = scanner.nextInt();
 												try {
 													if (loginInfo.getUId() == reqUserId) {
-														boolean requested = service1.request(reqUserId, reqBookId);
+														boolean requested = service3.request(reqUserId, reqBookId);
 														if (requested != false) {
 															System.out.println(
 																	"-----------------------------------------------");
@@ -581,7 +585,7 @@ public class LMSController {
 												int user_Id = scanner.nextInt();
 												try {
 													if (loginInfo.getUId() == user_Id) {
-														List<BorrowedBooks> borrowedBookList = service1
+														List<BorrowedBooks> borrowedBookList = service3
 																.borrowedBooks(user_Id);
 														for (BorrowedBooks bookBean : borrowedBookList) {
 
@@ -611,7 +615,7 @@ public class LMSController {
 												System.out.println("Search the book by the Author Name :");
 												String author = scanner.next();
 												try {
-													List<Book> bookauthor = service1.searchBookByAuthor(author);
+													List<Book> bookauthor = service2.searchBookByAuthor(author);
 													for (Book bookBean : bookauthor) {
 
 														if (bookBean != null) {
@@ -644,7 +648,7 @@ public class LMSController {
 												String btitle = scanner.next();
 
 												try {
-													List<Book> booktitle = service1.searchBookByTitle(btitle);
+													List<Book> booktitle = service2.searchBookByTitle(btitle);
 													for (Book bookBean : booktitle) {
 														if (bookBean != null) {
 															System.out.println(
@@ -676,7 +680,7 @@ public class LMSController {
 												int book_Id = scanner.nextInt();
 
 												try {
-													List<Book> bId = service1.searchBookById(book_Id);
+													List<Book> bId = service2.searchBookById(book_Id);
 													for (Book bookBean : bId) {
 														if (bookBean != null) {
 															System.out.println(
@@ -705,7 +709,7 @@ public class LMSController {
 												break;
 											case 6:
 												try {
-													List<Book> info = service1.getBooksInfo();
+													List<Book> info = service2.getBooksInfo();
 													for (Book bookBean : info) {
 
 														if (bookBean != null) {
@@ -741,7 +745,7 @@ public class LMSController {
 												String status = scanner.next();
 												try {
 													if (loginInfo.getUId() == userId) {
-														boolean returned = service1.returnBook(returnId, userId,
+														boolean returned = service3.returnBook(returnId, userId,
 																status);
 														if (returned != false) {
 															System.out.println(
@@ -769,7 +773,7 @@ public class LMSController {
 												String new_Password = scanner.next();
 												String user_Role = loginInfo.getRole();
 												try {
-													boolean updated = service1.updatePassword(email_Id, old_Password,
+													boolean updated = service2.updatePassword(email_Id, old_Password,
 															new_Password, user_Role);
 													if (updated) {
 														System.out.println(

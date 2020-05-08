@@ -42,7 +42,7 @@ public class LMSValidation {
 	}
 
 	public boolean validatedEmail(String email) throws LMSException {
-		String emailRegEx = "^[a-z0-9](\\.?[a-z0-9]){4,}@g(oogle)?mail\\.com$";
+		String emailRegEx = "^[a-z0-9](\\.?[a-z0-9]){2,}@g(oogle)?mail\\.com$";
 		boolean result = false;
 		Pattern pattern = Pattern.compile(emailRegEx);
 		Matcher matcher = pattern.matcher(email);

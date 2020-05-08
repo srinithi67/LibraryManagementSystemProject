@@ -29,181 +29,6 @@ public class UserDAOImple implements UserDAO {
 	int noOfBooks;
 
 	@Override
-	public boolean register(User user) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-			manager.persist(user);
-			transaction.commit();
-			return true;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			transaction.rollback();
-			return false;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public User authUser(String email, String password) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			String jpql = "select u from User u where u.email=:email and u.password=:password";
-			TypedQuery<User> query = manager.createQuery(jpql, User.class);
-			query.setParameter("email", email);
-			query.setParameter("password", password);
-			User bean = query.getSingleResult();
-			return bean;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return null;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public boolean addBook(Book book) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-			manager.persist(book);
-			transaction.commit();
-			return true;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			transaction.rollback();
-			return false;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public boolean removeBook(int bId) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-			Book record = manager.find(Book.class, bId);
-			manager.remove(record);
-			transaction.commit();
-			return true;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			transaction.rollback();
-			return false;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public boolean updateBook(Book book) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-			Book record = manager.find(Book.class, book.getBId());
-			record.setBookName(book.getBookName());
-			transaction.commit();
-			return true;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			transaction.rollback();
-			return false;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public boolean issueBook(int bId, int uId) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			String jpql = "select b from Book b where b.bId=:bId";
-			TypedQuery<Book> query = manager.createQuery(jpql, Book.class);
-			query.setParameter("bId", bId);
-			Book rs = query.getSingleResult();
-			if (rs != null) {
-				String jpql1 = "select r from RequestDetails r where r.uId=:uId and r.bId=:bId";
-				TypedQuery<RequestDetails> query1 = manager.createQuery(jpql1, RequestDetails.class);
-				query1.setParameter("uId", uId);
-				query1.setParameter("bId", bId);
-				List<RequestDetails> rs1 = query1.getResultList();
-				if (!rs1.isEmpty() && rs1 != null) {
-					transaction.begin();
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					Calendar cal = Calendar.getInstance();
-					String issueDate = sdf.format(cal.getTime());
-					cal.add(Calendar.DAY_OF_MONTH, 7);
-					String returnDate = sdf.format(cal.getTime());
-					BookIssueDetails issueBook = new BookIssueDetails();
-					issueBook.setUserId(uId);
-					issueBook.setBId(bId);
-					issueBook.setIssueDate(java.sql.Date.valueOf(issueDate));
-					issueBook.setReturnDate(java.sql.Date.valueOf(returnDate));
-					manager.persist(issueBook);
-					transaction.commit();
-					if (!rs1.isEmpty() && rs1 != null) {
-						transaction.begin();
-						Query bookName = manager.createQuery("select b.bookName from Book b where b.bId=:bId");
-						bookName.setParameter("bId", bId);
-						List book = bookName.getResultList();
-						BorrowedBooks borrowedBooks = new BorrowedBooks();
-						borrowedBooks.setUId(uId);
-						borrowedBooks.setBId(bId);
-						borrowedBooks.setBookName(book.get(0).toString());
-						manager.persist(borrowedBooks);
-						transaction.commit();
-						return true;
-					} else {
-						throw new LMSException("Book Not issued");
-					}
-				} else {
-					throw new LMSException("The respective user have not placed any request");
-				}
-			} else {
-				throw new LMSException("There is no book exist with bookId" + bId);
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			transaction.rollback();
-			return false;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
 	public boolean request(int uId, int bId) {
 		int count = 0;
 		try (FileInputStream info = new FileInputStream("db.properties");) {
@@ -233,11 +58,11 @@ public class UserDAOImple implements UserDAO {
 						noOfBooks = count++;
 					}
 					if (noOfBooks < 3) {
-						Query bookName = manager.createQuery("select b.bookName from Book b where b.bId=:bId");
+						Query bookName = manager.createQuery("select b.bookName from Book b where b.bId=:bookId");
 						bookName.setParameter("bookId", bId);
 						List book = bookName.getResultList();
 						Query email = manager.createQuery("select u.email from User u where u.uId=:uId");
-						email.setParameter("user_Id", uId);
+						email.setParameter("uId", uId);
 						List userEmail = email.getResultList();
 						transaction.begin();
 						RequestDetails request = new RequestDetails();
@@ -291,81 +116,6 @@ public class UserDAOImple implements UserDAO {
 	}
 
 	@Override
-	public List<Book> searchBookById(int bId) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			String jpql = "select b from Book b where b.bId=:bId";
-			TypedQuery<Book> query = manager.createQuery(jpql, Book.class);
-			query.setParameter("bId", bId);
-			List<Book> recordList = query.getResultList();
-			return recordList;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return null;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public List<Book> searchBookByTitle(String bookName) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			String jpql = "select b from Book b where b.bookName=:bookName";
-			TypedQuery<Book> query = manager.createQuery(jpql, Book.class);
-			query.setParameter("bookName", bookName);
-			List<Book> recordList = query.getResultList();
-			return recordList;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return null;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public List<Book> searchBookByAuthor(String authorName) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			String jpql = "select b from Book b where b.authorName=:authorName";
-			TypedQuery<Book> query = manager.createQuery(jpql, Book.class);
-			query.setParameter("authorName", authorName);
-			List<Book> recordList = query.getResultList();
-			return recordList;
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return null;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
-	@Override
-	public List<Book> getBooksInfo() {
-		factory = Persistence.createEntityManagerFactory("TestPersistence");
-		manager = factory.createEntityManager();
-		String jpql = "select b from Book b";
-		TypedQuery<Book> query = manager.createQuery(jpql, Book.class);
-		List<Book> recordList = query.getResultList();
-		manager.close();
-		factory.close();
-		return recordList;
-	}
-
-	@Override
 	public boolean returnBook(int bId, int uId, String status) {
 		try (FileInputStream info = new FileInputStream("db.properties");) {
 			Properties pro = new Properties();
@@ -373,12 +123,12 @@ public class UserDAOImple implements UserDAO {
 			factory = Persistence.createEntityManagerFactory("TestPersistence");
 			manager = factory.createEntityManager();
 			transaction = manager.getTransaction();
-			String jpql = "select b from Book b where b.bId=:bId";
+			String jpql = "select b from Book b where b.bookId=:bookId";
 			TypedQuery<Book> query = manager.createQuery(jpql, Book.class);
 			query.setParameter("bId", bId);
 			Book rs = query.getSingleResult();
 			if (rs != null) {
-				String jpql1 = "select b from BookIssueDetails b where b.bId=:bId and b.uId=:uId ";
+				String jpql1 = "select b from BookIssueDetails b where b.bId=:bId and b.userId=:userId ";
 				TypedQuery<BookIssueDetails> query1 = manager.createQuery(jpql1, BookIssueDetails.class);
 				query1.setParameter("bId", bId);
 				query1.setParameter("uId", uId);
@@ -498,75 +248,4 @@ public class UserDAOImple implements UserDAO {
 		factory.close();
 		return list;
 	}
-
-	@Override
-	public List<RequestDetails> showRequests() {
-		factory = Persistence.createEntityManagerFactory("TestPersistence");
-		manager = factory.createEntityManager();
-		String jpql = "select r from RequestDetails r";
-		TypedQuery<RequestDetails> query = manager.createQuery(jpql, RequestDetails.class);
-		List<RequestDetails> recordList = query.getResultList();
-		manager.close();
-		factory.close();
-		return recordList;
-	}
-
-	@Override
-	public List<BookIssueDetails> showIssuedBooks() {
-		factory = Persistence.createEntityManagerFactory("TestPersistence");
-		manager = factory.createEntityManager();
-		String jpql = "select b from BookIssueDetails b";
-		TypedQuery<BookIssueDetails> query = manager.createQuery(jpql, BookIssueDetails.class);
-		List<BookIssueDetails> recordList = query.getResultList();
-		manager.close();
-		factory.close();
-		return recordList;
-	}
-
-	@Override
-	public List<User> showUsers() {
-		factory = Persistence.createEntityManagerFactory("TestPersistence");
-		manager = factory.createEntityManager();
-		String jpql = "select u from User u";
-		TypedQuery<User> query = manager.createQuery(jpql, User.class);
-		List<User> recordList = query.getResultList();
-		manager.close();
-		factory.close();
-		return recordList;
-	}
-
-	@Override
-	public boolean updatePassword(String email, String password, String newPassword, String role) {
-		try (FileInputStream info = new FileInputStream("db.properties");) {
-			Properties pro = new Properties();
-			pro.load(info);
-			factory = Persistence.createEntityManagerFactory("TestPersistence");
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-			String jpql = "select u from User u where u.email=:email and u.role=:role and u.password=:password";
-			TypedQuery<User> query = manager.createQuery(jpql, User.class);
-			query.setParameter("email", email);
-			query.setParameter("role", role);
-			query.setParameter("password", password);
-			User rs = query.getSingleResult();
-			if (rs != null) {
-				User record = manager.find(User.class, email);
-				record.setPassword(newPassword);
-				transaction.commit();
-				return true;
-			} else {
-				throw new LMSException("User doesnt exist");
-			}
-
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			transaction.rollback();
-			return false;
-		} finally {
-			manager.close();
-			factory.close();
-		}
-	}
-
 }
