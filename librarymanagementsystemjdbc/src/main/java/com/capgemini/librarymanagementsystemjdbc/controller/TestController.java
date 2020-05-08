@@ -12,6 +12,8 @@ import com.capgemini.librarymanagementsystemjdbc.dto.RequestDetails;
 import com.capgemini.librarymanagementsystemjdbc.dto.User;
 import com.capgemini.librarymanagementsystemjdbc.exception.LMSException;
 import com.capgemini.librarymanagementsystemjdbc.factory.LMSFactory;
+import com.capgemini.librarymanagementsystemjdbc.service.AdminService;
+import com.capgemini.librarymanagementsystemjdbc.service.AdminUserService;
 import com.capgemini.librarymanagementsystemjdbc.service.UserService;
 import com.capgemini.librarymanagementsystemjdbc.validations.LMSValidation;
 
@@ -37,7 +39,9 @@ public class TestController {
 				System.out.println("Press 3 to EXIT");
 				do {
 					try {
-						UserService service1 = LMSFactory.getUserService();
+						AdminService service1 = LMSFactory.getAdminService();
+						AdminUserService service2 = LMSFactory.getAdminUserService();
+						UserService service3 = LMSFactory.getUserService();
 						int choice = scanner.nextInt();
 						switch (choice) {
 						case 1:
@@ -141,7 +145,7 @@ public class TestController {
 							ai.setMobile(regMobile);
 							ai.setRole(regRole);
 							try {
-								boolean check = service1.registerUser(ai);
+								boolean check = service2.registerUser(ai);
 								if (check) {
 									System.out.println("Registered");
 								} else {
@@ -157,7 +161,7 @@ public class TestController {
 							System.out.println("enter password");
 							String password = scanner.next();
 							try {
-								User loginInfo = service1.authUser(email, password);
+								User loginInfo = service2.authUser(email, password);
 								if (loginInfo.getEmail().equals(email)) {
 									if (loginInfo.getPassword().equals(password)) {
 
@@ -268,7 +272,7 @@ public class TestController {
 												System.out.println("Search the book by the Author Name:");
 												String author = scanner.next();
 												try {
-													List<Book> bookauthor = service1.searchBookByAuthor(author);
+													List<Book> bookauthor = service2.searchBookByAuthor(author);
 													if (!bookauthor.isEmpty() && bookauthor != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"BookId", "BookName", "AuthorName", "Category",
@@ -298,7 +302,7 @@ public class TestController {
 												System.out.println("Search the book by the Book_Title :");
 												String bookTitle = scanner.next();
 												try {
-													List<Book> bookTitle1 = service1.searchBookByTitle(bookTitle);
+													List<Book> bookTitle1 = service2.searchBookByTitle(bookTitle);
 													if (!bookTitle.isEmpty() && bookTitle != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"BookId", "BookName", "AuthorName", "Category",
@@ -325,7 +329,7 @@ public class TestController {
 
 											case 6:
 												try {
-													ArrayList<Book> info = service1.getBooksInfo();
+													List<Book> info = service2.getBooksInfo();
 													if (!info.isEmpty() && info != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"BookId", "BookName", "AuthorName", "Category",
@@ -354,7 +358,7 @@ public class TestController {
 												System.out.println("  Search the book by the Book_ID :");
 												int book_Id = scanner.nextInt();
 												try {
-													List<Book> bId = service1.searchBookById(book_Id);
+													List<Book> bId = service2.searchBookById(book_Id);
 													if (!bId.isEmpty() && bId != null) {
 														System.out.println(
 																String.format("%-10s %-25s %-25s %-20s %s", "BookId",
@@ -406,7 +410,7 @@ public class TestController {
 												System.out.println("Enter the User Id");
 												int user_Id = scanner.nextInt();
 												try {
-													List<BookIssueDetails> uId = service1.bookHistoryDetails(user_Id);
+													List<BookIssueDetails> uId = service3.bookHistoryDetails(user_Id);
 													for (BookIssueDetails issueDetails : uId) {
 														if (issueDetails != null) {
 															System.out.println(
@@ -450,7 +454,7 @@ public class TestController {
 												System.out.println("Issued Books are:");
 												try {
 													List<BookIssueDetails> issuedBooks = service1.showIssuedBooks();
-													System.out.println(String.format("%-10s %-10s %15s %s", "BookId",
+													System.out.println(String.format("%-10s %-10s %20s %s", "BookId",
 															"UserId", "IssueDate", "ReturnDate"));
 													for (BookIssueDetails issue : issuedBooks) {
 														if (issue != null) {
@@ -505,7 +509,7 @@ public class TestController {
 												String newPassword = scanner.next();
 												String userRole = loginInfo.getRole();
 												try {
-													boolean updated = service1.updatePassword(emailId, oldPassword,
+													boolean updated = service2.updatePassword(emailId, oldPassword,
 															newPassword, userRole);
 													if (updated) {
 														System.out.println(
@@ -558,7 +562,7 @@ public class TestController {
 												int reqUserId = scanner.nextInt();
 												try {
 													if (loginInfo.getuId() == reqUserId) {
-														boolean requested = service1.request(reqUserId, reqBookId);
+														boolean requested = service3.request(reqUserId, reqBookId);
 														if (requested != false) {
 															System.out.println(
 																	"-----------------------------------------------");
@@ -581,7 +585,7 @@ public class TestController {
 												int userId = scanner.nextInt();
 												try {
 													if (loginInfo.getuId() == userId) {
-														List<BorrowedBooks> borrowedBookList = service1
+														List<BorrowedBooks> borrowedBookList = service3
 																.borrowedBook(userId);
 														System.out.println(
 																String.format("%-5s %-5s %s", "UId", "BId", "Email"));
@@ -610,7 +614,7 @@ public class TestController {
 												System.out.println("Search the book by the Author Name:");
 												String author = scanner.next();
 												try {
-													List<Book> bookauthor = service1.searchBookByAuthor(author);
+													List<Book> bookauthor = service2.searchBookByAuthor(author);
 													if (!bookauthor.isEmpty() && bookauthor != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"BookId", "BookName", "AuthorName", "Category",
@@ -640,7 +644,7 @@ public class TestController {
 												System.out.println("Search the book by the Book_Title :");
 												String btitle = scanner.next();
 												try {
-													List<Book> booktitle = service1.searchBookByTitle(btitle);
+													List<Book> booktitle = service2.searchBookByTitle(btitle);
 													if (!booktitle.isEmpty() && booktitle != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"BookId", "BookName", "AuthorName", "Category",
@@ -669,7 +673,7 @@ public class TestController {
 												System.out.println("  Search the book by the Book_ID :");
 												int bookId = scanner.nextInt();
 												try {
-													List<Book> bId = service1.searchBookById(bookId);
+													List<Book> bId = service2.searchBookById(bookId);
 													if (!bId.isEmpty() && bId != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"Book-Id", "Book-Name", "Author", "Category",
@@ -695,7 +699,7 @@ public class TestController {
 												break;
 											case 6:
 												try {
-													ArrayList<Book> info = service1.getBooksInfo();
+													List<Book> info = service2.getBooksInfo();
 													if (!info.isEmpty() && info != null) {
 														System.out.println(String.format("%-10s %-25s %-25s %-20s %s",
 																"BookId", "BookName", "Author", "Category",
@@ -729,7 +733,7 @@ public class TestController {
 												String status = scanner.next();
 												try {
 													if (loginInfo.getuId() == userId1) {
-														boolean returned = service1.returnBook(returnId, userId1,
+														boolean returned = service3.returnBook(returnId, userId1,
 																status);
 														if (returned != false) {
 															System.out.println(
@@ -757,7 +761,7 @@ public class TestController {
 												String newPassword = scanner.next();
 												String userRole = loginInfo.getRole();
 												try {
-													boolean updated = service1.updatePassword(emailId, oldPassword,
+													boolean updated = service2.updatePassword(emailId, oldPassword,
 															newPassword, userRole);
 													if (updated) {
 														System.out.println(
